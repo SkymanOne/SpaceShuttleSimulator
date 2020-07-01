@@ -15,8 +15,8 @@ namespace Simulation.Core.Models
         
         public abstract double DragCoeff { get; }
         public const int DecelerationLoadingLimit = 12;
-        private const double R = 6378;
-        private const double H = 6.93;
+        private const double R = 6378000;
+        private const double H = 6930;
         private const double InitP = 1.225;
         private const double InitGravity = 9.81;
 
@@ -27,7 +27,7 @@ namespace Simulation.Core.Models
         public double Velocity { get; set; }
         public double Height { get; protected set; }
         public int Mass { get; protected set; }
-        public double CurrentTemperature { get; protected set; }
+        public double CurrentTemperature { get; protected set; } = 200;
         public double Radius { get; protected set; }
         public double AngleOfAttack { get; set; }
         
@@ -46,18 +46,25 @@ namespace Simulation.Core.Models
 
         private double _density;
         private double _gravity;
+        private double _initHeight;
 
         #endregion
 
-        public SpaceVehicle(int mass, double velocity, int height, double angleOfAttack, double angleBelowHorizontal, double radius)
+        #region State Vars
+
+        public bool IsDestroyed { get; set; } = false;
+
+        #endregion
+
+        public SpaceVehicle(InitialConditionsDTO initConditions)
         {
-            Mass = mass;
-            Radius = radius;
-            Height = height;
-            AngleOfAttack = angleOfAttack;
-            AngleBelowHorizontal = angleBelowHorizontal;
-            CalculateBallisticCoeff();
-            CalculateLdCoeff();
+            Mass = initConditions.Mass;
+            Velocity = initConditions.Velocity;
+            Radius = initConditions.Radius;
+            _initHeight = initConditions.Height;
+            Height = initConditions.Height;
+            AngleOfAttack = initConditions.AngleOfAttack;
+            AngleBelowHorizontal = initConditions.AngleBelowHorizontal;
         }
         public abstract void CalculateBallisticCoeff();
         public abstract void CalculateLdCoeff();
@@ -65,8 +72,8 @@ namespace Simulation.Core.Models
         public void FlyNextTimeInterval(double timeInterval)
         {
             // Trajectory calculations
-            Height += Velocity * Math.Sin(DegreesToRadians(AngleBelowHorizontal) * timeInterval);
-            _density = InitGravity * Math.Pow(Math.E, -(Height / H));
+            //Height += Velocity * Math.Sin(DegreesToRadians(AngleBelowHorizontal) * timeInterval);
+            _density = InitP * Math.Pow(Math.E, -(Height / H));
             _gravity = InitGravity * Math.Pow(R / (R + Height), 2);
             
             CalculateAngleBelowHorizontal(timeInterval);
@@ -78,34 +85,34 @@ namespace Simulation.Core.Models
             DecelerationLoad = (int) Math.Round(AbsoluteAcceleration / 9.81);
 
             // Heating calculations
-            //TODO
+            CalculateTemperature();
         }
 
         private void CalculateAngleBelowHorizontal(double timeInterval)
         {
-            AngleBelowHorizontal += (-1 * _density * Velocity * LiftToDrag / 2 * BallisticCoeff +
+            AngleBelowHorizontal += 0 - (_density * Velocity * LiftToDrag / (2 * BallisticCoeff) +
                                     _gravity * Math.Cos(DegreesToRadians(AngleBelowHorizontal)) / R +
                                     Velocity * Math.Cos(DegreesToRadians(AngleBelowHorizontal)) / R) * timeInterval;
         }
 
         private void CalculateAbsoluteAcceleration()
         {
-            AbsoluteAcceleration = -1 * _density * Math.Pow(Velocity, 2) / (2 * BallisticCoeff) +
-                                   _gravity * Math.Sin(DegreesToRadians(AngleBelowHorizontal));
+            AbsoluteAcceleration = _gravity * Math.Sin(DegreesToRadians(AngleBelowHorizontal)) - 
+                                   _density * Math.Pow(Velocity, 2) / (2 * BallisticCoeff);
         }
 
         private void CalculateDisplacementAndVelocity(double timeInterval)
         {
             double oldVelocity = Velocity;
-            Velocity += AbsoluteAcceleration * timeInterval;
-            Displacement = 0.5 * (oldVelocity + Velocity) * timeInterval;
+            Velocity = AbsoluteAcceleration * timeInterval;
+            Displacement += 0.5 * (oldVelocity + Velocity) * timeInterval;
         }
 
         private void CalculateDisplacementComponents()
         {
-            Height -= Displacement * Math.Sin(DegreesToRadians(AngleBelowHorizontal));
-            Range += Displacement * Math.Cos(DegreesToRadians(AngleBelowHorizontal));
-            DisplacementAroundEarth += 2 * Math.PI * R * Range / (2 * Math.PI * (R + Height));
+            Height = _initHeight - Displacement * Math.Sin(DegreesToRadians(AngleBelowHorizontal));
+            Range = Displacement * Math.Cos(DegreesToRadians(AngleBelowHorizontal));
+            DisplacementAroundEarth = 2 * Math.PI * R * Range / (2 * Math.PI * (R + Height));
         }
 
         private void CalculateTemperature()

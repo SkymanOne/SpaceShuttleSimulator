@@ -13,10 +13,12 @@ namespace Simulation.Core.Models
         
         public double CrossSectionalArea { get; private set; }
         
-        public Capsule(int mass, double velocity, int height, double angleOfAttack, double angleBelowHorizontal, double radius) 
-            : base(mass, velocity, height, angleOfAttack, angleBelowHorizontal, radius)
+        public Capsule(InitialConditionsDTO initConditions) 
+            : base(initConditions)
         {
             CrossSectionalArea = Math.PI * Math.Pow(Radius, 2);
+            CalculateBallisticCoeff();
+            CalculateLdCoeff();
         }
 
         public override void CalculateBallisticCoeff()

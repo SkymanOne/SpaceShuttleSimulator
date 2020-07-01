@@ -26,15 +26,18 @@ namespace Simulation.Core.Models
             set => _referenceArea = value;
         }
 
-        public Shuttle(int mass, double velocity, int height, double angleOfAttack, double angleBelowHorizontal, double radius) 
-            : base(mass, velocity, height, angleOfAttack, angleBelowHorizontal, radius)
+        public Shuttle(InitialConditionsDTO initConditions) 
+            : base(initConditions)
         {
             CrossSectionalArea = Math.PI * Math.Pow(Radius, 2);
+            CalculateBallisticCoeff();
+            CalculateLdCoeff();
         }
         
         public override void CalculateBallisticCoeff()
         {
-            BallisticCoeff = Mass / (DragCoeff * CrossSectionalArea);
+            //TODO: either replace fix the formula or replace with a property
+            BallisticCoeff = 860;
         }
 
         public override void CalculateLdCoeff()
