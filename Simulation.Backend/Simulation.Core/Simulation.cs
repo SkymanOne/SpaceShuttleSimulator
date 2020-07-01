@@ -2,7 +2,7 @@
 
 namespace Simulation.Core
 {
-    public class Class1
+    public class Simulation
     {
     }
 }
