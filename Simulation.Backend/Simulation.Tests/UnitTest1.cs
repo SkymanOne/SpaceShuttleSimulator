@@ -13,14 +13,14 @@ namespace Simulation.Tests
             var conditions = new InitialConditionsDTO()
             {
                 AngleBelowHorizontal = 6.93,
-                AngleOfAttack = 40,
+                AngleOfAttack = 20,
                 Height = 80000,
                 Mass = 78000,
-                Radius = 2,
-                Velocity = 7800
+                Radius = 6.6,
+                Velocity = 11000
             };
             simulation.SetupEnvironment(5, conditions, Core.Simulation.VehicleType.SpaceShuttle);
-            var output = simulation.Run(1000);
+            var output = simulation.Run(10000);
         }
     }
 }

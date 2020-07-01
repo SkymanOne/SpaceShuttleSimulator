@@ -46,7 +46,10 @@ namespace Simulation.Core.Models
 
         private double _density;
         private double _gravity;
+
+        private double _initVelocity;
         private double _initHeight;
+        private double _initAngleBelowHorizontal;
 
         #endregion
 
@@ -59,11 +62,13 @@ namespace Simulation.Core.Models
         public SpaceVehicle(InitialConditionsDTO initConditions)
         {
             Mass = initConditions.Mass;
+            _initVelocity = initConditions.Velocity;
             Velocity = initConditions.Velocity;
             Radius = initConditions.Radius;
             _initHeight = initConditions.Height;
             Height = initConditions.Height;
             AngleOfAttack = initConditions.AngleOfAttack;
+            _initAngleBelowHorizontal = initConditions.AngleBelowHorizontal;
             AngleBelowHorizontal = initConditions.AngleBelowHorizontal;
         }
         public abstract void CalculateBallisticCoeff();
@@ -73,7 +78,7 @@ namespace Simulation.Core.Models
         {
             // Trajectory calculations
             //Height += Velocity * Math.Sin(DegreesToRadians(AngleBelowHorizontal) * timeInterval);
-            _density = InitP * Math.Pow(Math.E, -(Height / H));
+            _density = InitP * Math.Pow(Math.E, -1 * (Height / H));
             _gravity = InitGravity * Math.Pow(R / (R + Height), 2);
             
             CalculateAngleBelowHorizontal(timeInterval);
@@ -82,7 +87,7 @@ namespace Simulation.Core.Models
             CalculateDisplacementComponents();
 
             // Calculate Deceleration Load
-            DecelerationLoad = (int) Math.Round(AbsoluteAcceleration / 9.81);
+            DecelerationLoad = (int) Math.Round(Math.Abs(AbsoluteAcceleration) / 9.81);
 
             // Heating calculations
             CalculateTemperature();
@@ -90,21 +95,22 @@ namespace Simulation.Core.Models
 
         private void CalculateAngleBelowHorizontal(double timeInterval)
         {
-            AngleBelowHorizontal += 0 - (_density * Velocity * LiftToDrag / (2 * BallisticCoeff) +
+            AngleBelowHorizontal = _initAngleBelowHorizontal - (_density * Velocity * LiftToDrag / (2 * BallisticCoeff) +
                                     _gravity * Math.Cos(DegreesToRadians(AngleBelowHorizontal)) / R +
                                     Velocity * Math.Cos(DegreesToRadians(AngleBelowHorizontal)) / R) * timeInterval;
         }
 
         private void CalculateAbsoluteAcceleration()
         {
-            AbsoluteAcceleration = _gravity * Math.Sin(DegreesToRadians(AngleBelowHorizontal)) - 
-                                   _density * Math.Pow(Velocity, 2) / (2 * BallisticCoeff);
+            var first = _gravity * Math.Sin(DegreesToRadians(AngleBelowHorizontal));
+            var second = _density * Math.Pow(Velocity, 2) / (2 * BallisticCoeff);
+            AbsoluteAcceleration = first - second;
         }
 
         private void CalculateDisplacementAndVelocity(double timeInterval)
         {
             double oldVelocity = Velocity;
-            Velocity = AbsoluteAcceleration * timeInterval;
+            Velocity = _initVelocity + AbsoluteAcceleration * timeInterval;
             Displacement += 0.5 * (oldVelocity + Velocity) * timeInterval;
         }
 
@@ -125,6 +131,11 @@ namespace Simulation.Core.Models
         {
             //TODO: check properties and alert
             return true;
+        }
+
+        public SpaceVehicle GetState()
+        {
+            return (SpaceVehicle) this.MemberwiseClone();
         }
 
         public double DegreesToRadians(double d)

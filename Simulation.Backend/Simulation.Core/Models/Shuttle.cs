@@ -36,8 +36,7 @@ namespace Simulation.Core.Models
         
         public override void CalculateBallisticCoeff()
         {
-            //TODO: either replace fix the formula or replace with a property
-            BallisticCoeff = 860;
+            BallisticCoeff = Mass / (CrossSectionalArea * DragCoeff);
         }
 
         public override void CalculateLdCoeff()

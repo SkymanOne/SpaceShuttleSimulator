@@ -40,7 +40,7 @@ namespace Simulation.Core
                 {
                     Logs = new Log[0],
                     TimeElapsed = (_timeLine.Count + 1) * TimeInterval,
-                    VehicleState = _spaceVehicle
+                    VehicleState = _spaceVehicle.GetState()
                 });
             }
             return _timeLine;
