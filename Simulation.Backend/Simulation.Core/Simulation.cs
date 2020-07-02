@@ -6,7 +6,7 @@ namespace Simulation.Core
 {
     public class Simulation
     {
-        private const int TimeLimit = 100000;
+        private const int TimeLimit = 5000;
         public double TimeInterval { get; private set; }
         public SpaceVehicle SpaceVehicle { get; private set; }
         private List<TimeFrame> _timeLine;

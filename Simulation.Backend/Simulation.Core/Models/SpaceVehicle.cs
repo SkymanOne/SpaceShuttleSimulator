@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Simulation.Core.Models
 {
@@ -28,7 +29,6 @@ namespace Simulation.Core.Models
 
         #endregion
 
-
         #region Inputs
         
         public double Velocity { get; set; }
@@ -52,13 +52,12 @@ namespace Simulation.Core.Models
         public int DecelerationLoad { get; protected set; }
         public double HeatFlux { get; protected set; }
 
-        private double _density;
-        private double _gravity;
-        private double _heatTransfer;
+        protected double _density;
+        protected double _gravity;
 
-        private double _initVelocity;
-        private double _initHeight;
-        private double _initAngleBelowHorizontal;
+        protected double _initVelocity;
+        protected double _initHeight;
+        protected double _initAngleBelowHorizontal;
 
         #endregion
 
@@ -104,8 +103,8 @@ namespace Simulation.Core.Models
 
         private void CalculateAngleBelowHorizontal(double timeInterval)
         {
-            AngleBelowHorizontal = _initAngleBelowHorizontal - (_density * Velocity * LiftToDrag / (2 * BallisticCoeff) +
-                                    _gravity * Math.Cos(DegreesToRadians(AngleBelowHorizontal)) / R +
+            AngleBelowHorizontal += (_density * Velocity * LiftToDrag / (2 * BallisticCoeff) +
+                                    _gravity * Math.Cos(DegreesToRadians(AngleBelowHorizontal)) / R -
                                     Velocity * Math.Cos(DegreesToRadians(AngleBelowHorizontal)) / R) * timeInterval;
         }
 
@@ -119,7 +118,7 @@ namespace Simulation.Core.Models
         private void CalculateDisplacementAndVelocity(double timeInterval)
         {
             double oldVelocity = Velocity;
-            Velocity = _initVelocity + AbsoluteAcceleration * timeInterval;
+            Velocity = oldVelocity + AbsoluteAcceleration * timeInterval;
             Displacement += 0.5 * (oldVelocity + Velocity) * timeInterval;
         }
 
@@ -130,18 +129,13 @@ namespace Simulation.Core.Models
             DisplacementAroundEarth = 2 * Math.PI * R * Range / (2 * Math.PI * (R + Height));
         }
 
-        private void CalculateTemperature(double timeInterval)
-        {
-            //TODO: use basic heat formula to calculate deltaT
-            _heatTransfer = 10.45 - Math.Abs(Velocity) + 10 * Math.Pow(Math.Abs(Velocity), 0.5) * 1.163;
-            HeatFlux = 1.83 * Math.Pow(10, -4) * Math.Pow(Velocity, 3) * Math.Pow(_density / Radius, 0.5);
-            var deltaT = HeatFlux / _heatTransfer; //in kelvins
-        }
+        protected abstract void CalculateTemperature(double timeInterval);
 
-        public Log[] GetUpdates()
+        public List<Log> GetUpdates()
         {
-            //TODO: check properties and alert
-            return new Log[0];
+            List<Log> logs = new List<Log>();
+            
+            return logs;
         }
 
         public SpaceVehicle GetState()

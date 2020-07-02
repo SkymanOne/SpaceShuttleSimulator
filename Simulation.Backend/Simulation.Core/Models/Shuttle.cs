@@ -6,6 +6,7 @@ namespace Simulation.Core.Models
     {
         //TODO: to compute automatically
         public const double SkinFriction = 0.045;
+        
 
         public override double MaxTemperature => 2400;
         public override int ThermalConductivity => 40;
@@ -13,6 +14,9 @@ namespace Simulation.Core.Models
 
         private double _crossSectionalArea;
         private double _referenceArea;
+        private int _shc = 760;
+        private double _materialDesity = 1700;
+        private double _noseMass = 1697;
 
         public double CrossSectionalArea
         {
@@ -44,6 +48,14 @@ namespace Simulation.Core.Models
             double angleAttackRadians = DegreesToRadians(AngleOfAttack);
             LiftToDrag = Math.Sin(DegreesToRadians(AngleOfAttack)) * Math.Sin(angleAttackRadians * 2) /
                          (2 * Math.Pow(Math.Sin(angleAttackRadians), 3) + SkinFriction);
+        }
+
+        protected override void CalculateTemperature(double timeInterval)
+        {
+            HeatFlux = 1.83 * Math.Pow(10, -4) * Math.Pow(Velocity, 3) * Math.Pow(_density / Radius, 0.5);
+            var heat = HeatFlux * timeInterval * Math.PI * Math.Pow(Radius, 2);
+            var deltaT = heat / (_noseMass * _shc) - 273.15; //in Celsius
+            CurrentTemperature += deltaT;
         }
     }
 }

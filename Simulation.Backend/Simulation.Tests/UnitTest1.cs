@@ -19,7 +19,7 @@ namespace Simulation.Tests
                 Height = 80000,
                 Mass = 78000,
                 Radius = 6.6,
-                Velocity = 11000
+                Velocity = 8000
             };
             Simulation.SetupEnvironment(5, conditions, Core.Simulation.VehicleType.SpaceShuttle);
         }
