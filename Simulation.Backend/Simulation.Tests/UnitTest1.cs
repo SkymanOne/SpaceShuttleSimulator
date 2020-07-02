@@ -15,7 +15,7 @@ namespace Simulation.Tests
             var conditions = new InitialConditionsDTO()
             {
                 AngleBelowHorizontal = 6.93,
-                AngleOfAttack = 40,
+                AngleOfAttack = 20,
                 Height = 80000,
                 Mass = 78000,
                 Radius = 6.6,

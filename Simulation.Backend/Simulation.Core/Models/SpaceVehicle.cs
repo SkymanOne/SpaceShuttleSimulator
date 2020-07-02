@@ -103,7 +103,7 @@ namespace Simulation.Core.Models
 
         private void CalculateAngleBelowHorizontal(double timeInterval)
         {
-            AngleBelowHorizontal += (_density * Velocity * LiftToDrag / (2 * BallisticCoeff) +
+            AngleBelowHorizontal += (-_density * Velocity * LiftToDrag / (2 * BallisticCoeff) +
                                     _gravity * Math.Cos(DegreesToRadians(AngleBelowHorizontal)) / R -
                                     Velocity * Math.Cos(DegreesToRadians(AngleBelowHorizontal)) / R) * timeInterval;
         }
