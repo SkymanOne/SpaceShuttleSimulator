@@ -89,10 +89,10 @@ namespace Simulation.Core.Models
             _density = InitP * Math.Pow(Math.E, -1 * (Height / H));
             _gravity = InitGravity * Math.Pow(R / (R + Height), 2);
             
-            CalculateAngleBelowHorizontal(timeInterval);
             CalculateAbsoluteAcceleration();
             CalculateDisplacementAndVelocity(timeInterval);
             CalculateDisplacementComponents();
+            CalculateAngleBelowHorizontal(timeInterval);
 
             // Calculate Deceleration Load
             DecelerationLoad = (int) Math.Round(Math.Abs(AbsoluteAcceleration) / 9.81);
@@ -103,7 +103,7 @@ namespace Simulation.Core.Models
 
         private void CalculateAngleBelowHorizontal(double timeInterval)
         {
-            AngleBelowHorizontal += (-_density * Velocity * LiftToDrag / (2 * BallisticCoeff) +
+            AngleBelowHorizontal += ((_density * Velocity * LiftToDrag) / (2 * BallisticCoeff) +
                                     _gravity * Math.Cos(DegreesToRadians(AngleBelowHorizontal)) / R -
                                     Velocity * Math.Cos(DegreesToRadians(AngleBelowHorizontal)) / R) * timeInterval;
         }

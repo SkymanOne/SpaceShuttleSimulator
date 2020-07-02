@@ -55,7 +55,7 @@ namespace Simulation.Core.Models
             HeatFlux = 1.83 * Math.Pow(10, -4) * Math.Pow(Velocity, 3) * Math.Pow(_density / Radius, 0.5);
             var heat = HeatFlux * timeInterval * Math.PI * Math.Pow(Radius, 2);
             var deltaT = heat / (_noseMass * _shc) - 273.15; //in Celsius
-            CurrentTemperature += deltaT;
+            CurrentTemperature -= deltaT;
         }
     }
 }
