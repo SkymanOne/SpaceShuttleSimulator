@@ -6,8 +6,9 @@ namespace Simulation.Core
 {
     public class Simulation
     {
+        private const int TimeLimit = 100000;
         public double TimeInterval { get; private set; }
-        private SpaceVehicle _spaceVehicle;
+        public SpaceVehicle SpaceVehicle { get; private set; }
         private List<TimeFrame> _timeLine;
         public enum VehicleType
         {
@@ -22,29 +23,29 @@ namespace Simulation.Core
             switch (vehicleType)
             {
                 case VehicleType.SpaceShuttle:
-                    _spaceVehicle = new Shuttle(initConditions);
+                    SpaceVehicle = new Shuttle(initConditions);
                     break;
                 case VehicleType.SpaceCapsule:
-                    _spaceVehicle = new Capsule(initConditions);
+                    SpaceVehicle = new Capsule(initConditions);
                     break;
             }
             _timeLine = new List<TimeFrame>();
         }
 
-        public List<TimeFrame> Run(int numberOfTimeFrames)
+        public List<TimeFrame> Run()
         {
-            while (!_spaceVehicle.IsDestroyed && _spaceVehicle.Height > 100 && _timeLine.Count != numberOfTimeFrames)
+            while (_timeLine.Count != TimeLimit)
             {
-                _spaceVehicle.FlyNextTimeInterval(TimeInterval);
+                SpaceVehicle.FlyNextTimeInterval(TimeInterval);
+                if (SpaceVehicle.IsDestroyed || SpaceVehicle.Height < 0) break; 
                 _timeLine.Add(new TimeFrame()
                 {
                     Logs = new Log[0],
                     TimeElapsed = (_timeLine.Count + 1) * TimeInterval,
-                    VehicleState = _spaceVehicle.GetState()
+                    VehicleState = SpaceVehicle.GetState()
                 });
             }
             return _timeLine;
         }
-
     }
 }

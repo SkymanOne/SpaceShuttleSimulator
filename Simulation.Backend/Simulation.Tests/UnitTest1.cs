@@ -6,21 +6,39 @@ namespace Simulation.Tests
     [TestClass]
     public class UnitTest1
     {
-        [TestMethod]
-        public void RunSimulation()
+        private Core.Simulation Simulation { get; set; }
+
+        [TestInitialize]
+        public void Init()
         {
-            var simulation = new Core.Simulation();
+            Simulation = new Core.Simulation();
             var conditions = new InitialConditionsDTO()
             {
                 AngleBelowHorizontal = 6.93,
-                AngleOfAttack = 20,
+                AngleOfAttack = 40,
                 Height = 80000,
                 Mass = 78000,
                 Radius = 6.6,
                 Velocity = 11000
             };
-            simulation.SetupEnvironment(5, conditions, Core.Simulation.VehicleType.SpaceShuttle);
-            var output = simulation.Run(10000);
+            Simulation.SetupEnvironment(5, conditions, Core.Simulation.VehicleType.SpaceShuttle);
+        }
+
+        [TestMethod]
+        public void RunSimulation()
+        {
+            var output = Simulation.Run();
+            foreach (var o in output)
+            {
+                Assert.IsTrue(o.VehicleState.Height > 100);
+            }
+        }
+
+        [TestMethod]
+        public void TestValues()
+        {
+            Simulation.SpaceVehicle.FlyNextTimeInterval(10);
+            Assert.IsTrue(Simulation.SpaceVehicle.AngleBelowHorizontal > 0);
         }
     }
 }

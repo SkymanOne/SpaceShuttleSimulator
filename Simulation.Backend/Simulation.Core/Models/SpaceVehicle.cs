@@ -11,16 +11,23 @@ namespace Simulation.Core.Models
         #region Limit Constants
 
         public abstract double MaxTemperature { get; }
-        public abstract int ThermalConductivity { get; }
-        
+        protected const int DecelerationLoadingLimit = 12;
+        protected const double MaxAngle = 90;
+
+        #endregion
+
+        #region Constants
+
         public abstract double DragCoeff { get; }
-        public const int DecelerationLoadingLimit = 12;
+        public abstract int ThermalConductivity { get; }
         private const double R = 6378000;
         private const double H = 6930;
         private const double InitP = 1.225;
         private const double InitGravity = 9.81;
+        private const double ProtectionLayerThickness = 0.127; //Nose Thickness in m
 
         #endregion
+
 
         #region Inputs
         
@@ -43,9 +50,11 @@ namespace Simulation.Core.Models
         public double Range { get; protected set; }
         public double DisplacementAroundEarth { get; protected set; }
         public int DecelerationLoad { get; protected set; }
+        public double HeatFlux { get; protected set; }
 
         private double _density;
         private double _gravity;
+        private double _heatTransfer;
 
         private double _initVelocity;
         private double _initHeight;
@@ -90,7 +99,7 @@ namespace Simulation.Core.Models
             DecelerationLoad = (int) Math.Round(Math.Abs(AbsoluteAcceleration) / 9.81);
 
             // Heating calculations
-            CalculateTemperature();
+            CalculateTemperature(timeInterval);
         }
 
         private void CalculateAngleBelowHorizontal(double timeInterval)
@@ -121,16 +130,18 @@ namespace Simulation.Core.Models
             DisplacementAroundEarth = 2 * Math.PI * R * Range / (2 * Math.PI * (R + Height));
         }
 
-        private void CalculateTemperature()
+        private void CalculateTemperature(double timeInterval)
         {
-            double heatFlux = 1.83 * Math.Pow(10, -4) * Math.Pow(Velocity, 3) * Math.Pow(_density / Radius, 0.5);
-            
+            //TODO: use basic heat formula to calculate deltaT
+            _heatTransfer = 10.45 - Math.Abs(Velocity) + 10 * Math.Pow(Math.Abs(Velocity), 0.5) * 1.163;
+            HeatFlux = 1.83 * Math.Pow(10, -4) * Math.Pow(Velocity, 3) * Math.Pow(_density / Radius, 0.5);
+            var deltaT = HeatFlux / _heatTransfer; //in kelvins
         }
 
-        public bool CheckTheState()
+        public Log[] GetUpdates()
         {
             //TODO: check properties and alert
-            return true;
+            return new Log[0];
         }
 
         public SpaceVehicle GetState()
