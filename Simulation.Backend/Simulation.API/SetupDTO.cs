@@ -9,6 +9,7 @@ namespace Simulation.API
         public double AngleBelowHorizontal { get; set; }
         public double Radius { get; set; }
         public double TimeFrame { get; set; }
+        public int Time { get; set; }
         public Core.Simulation.VehicleType VehicleType { get; set; }
     }
 }

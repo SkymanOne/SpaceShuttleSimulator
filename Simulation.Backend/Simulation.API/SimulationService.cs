@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Simulation.Core;
 using Simulation.Core.Models;
 
@@ -8,6 +9,7 @@ namespace Simulation.API
     {
         void Init(double timeFrame, InitialConditionsDTO initConditions, Core.Simulation.VehicleType vehicleType);
         List<TimeFrame> Run();
+        List<TimeFrame> UpdatedRun(int time);
     }
     public class SimulationService : ISimulationService
     {
@@ -20,7 +22,12 @@ namespace Simulation.API
 
         public List<TimeFrame> Run()
         {
-            return _simulation.Run();
+            return _simulation.InternalRun();
+        }
+
+        public List<TimeFrame> UpdatedRun(int time)
+        {
+            return _simulation.InternalRun().Skip(time).ToList();
         }
     }
 }

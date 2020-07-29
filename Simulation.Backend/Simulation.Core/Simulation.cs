@@ -32,7 +32,7 @@ namespace Simulation.Core
             _timeLine = new List<TimeFrame>();
         }
 
-        public List<TimeFrame> Run()
+        public List<TimeFrame> InternalRun()
         {
             while (_timeLine.Count != TimeLimit)
             {

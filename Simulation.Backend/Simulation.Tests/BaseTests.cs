@@ -4,7 +4,7 @@ using Simulation.Core;
 namespace Simulation.Tests
 {
     [TestClass]
-    public class UnitTest1
+    public class BaseTests
     {
         private Core.Simulation Simulation { get; set; }
 
@@ -27,7 +27,7 @@ namespace Simulation.Tests
         [TestMethod]
         public void RunSimulation()
         {
-            var output = Simulation.Run();
+            var output = Simulation.InternalRun();
             foreach (var o in output)
             {
                 Assert.IsTrue(o.VehicleState.Height > 100);

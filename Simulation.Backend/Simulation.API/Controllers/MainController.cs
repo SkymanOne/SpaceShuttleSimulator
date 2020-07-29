@@ -37,5 +37,22 @@ namespace Simulation.API.Controllers
             var output = _simulationService.Run();
             return output;
         }
+
+        [HttpPost]
+        [Route("/updated_run")]
+        public List<TimeFrame> UpdatedRun(SetupDTO setupDTO)
+        {
+            _simulationService.Init(setupDTO.TimeFrame, new InitialConditionsDTO
+            {
+                AngleBelowHorizontal = setupDTO.AngleBelowHorizontal,
+                AngleOfAttack = setupDTO.AngleOfAttack,
+                Height = setupDTO.Height,
+                Mass = setupDTO.Mass,
+                Radius = setupDTO.Radius,
+                Velocity = setupDTO.Velocity
+            }, setupDTO.VehicleType);
+            var output = _simulationService.UpdatedRun(setupDTO.Time);
+            return output;
+        }
     }
 }
