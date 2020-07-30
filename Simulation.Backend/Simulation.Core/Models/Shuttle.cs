@@ -15,7 +15,7 @@ namespace Simulation.Core.Models
         private double _crossSectionalArea;
         private double _referenceArea;
         private int _shc = 760;
-        private double _materialDesity = 1700;
+        //private double _materialDesity = 1700;s
         private double _noseMass = 1697;
 
         public double CrossSectionalArea
@@ -38,12 +38,13 @@ namespace Simulation.Core.Models
             CalculateLdCoeff();
         }
         
-        public override void CalculateBallisticCoeff()
+        public sealed override void CalculateBallisticCoeff()
         {
+            //it should be different for the shuttle, but we neglect the wings
             BallisticCoeff = Mass / (CrossSectionalArea * DragCoeff);
         }
 
-        public override void CalculateLdCoeff()
+        public sealed override void CalculateLdCoeff()
         {
             double angleAttackRadians = DegreesToRadians(AngleOfAttack);
             LiftToDrag = Math.Sin(DegreesToRadians(AngleOfAttack)) * Math.Sin(angleAttackRadians * 2) /

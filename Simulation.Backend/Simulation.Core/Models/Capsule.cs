@@ -21,14 +21,12 @@ namespace Simulation.Core.Models
             CalculateLdCoeff();
         }
 
-        public override void CalculateBallisticCoeff()
+        public sealed override void CalculateBallisticCoeff()
         {
             BallisticCoeff = Mass / (DragCoeff * CrossSectionalArea);
         }
-        
-        
 
-        public override void CalculateLdCoeff()
+        public sealed override void CalculateLdCoeff()
         {
             LiftToDrag = 0.0143 * AngleOfAttack;
         }
