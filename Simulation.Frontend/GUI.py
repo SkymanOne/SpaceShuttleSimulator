@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import json
+import time
 import copy
 from pandas import *
 class objectview(object):
@@ -117,13 +118,67 @@ def sideBarInput():
     updatedshuttle = None
     if st.sidebar.checkbox("updateAngle"):
         UpdatedAngleBelowHorizontal = st.sidebar.slider("NewAngleBelowHorizontal",0.0,90.0,6.0)
+        UpdatedAngleOfAttack = st.sidebar.slider("NewAngleOfAttack",0.0,90.0,6.0)
         updatedshuttle = UpdatedShuttle(copy.deepcopy(shuttle))
         updatedshuttle.Time = st.sidebar.slider("Applied TimeFrame",0,100,1)
         updatedshuttle.shuttle.AngleBelowHorizontal = UpdatedAngleBelowHorizontal
+        updatedshuttle.shuttle.AngleOfAttack = UpdatedAngleOfAttack
     return [shuttle,updatedshuttle]
 
+def autoSimulation(o):
+    SimulationSpeed = st.slider("Select Simulation Speed", 1, 10, 1)
+    spTimePmt = st.empty()
+    spTfPmt = st.empty()
+    spSpdPmt = st.empty()
+    spSpeed = st.empty()
+    spAccPmt = st.empty()
+    spAccRefPmt = st.empty()
+    spAcc = st.empty()
+    spAngPmt = st.empty()
+    spAng = st.empty()
+    spAltPmt = st.empty()
+    spAlt = st.empty()
+    spDispPmt = st.empty()
+    spDispEarthPmt = st.empty()
+    spDisp = st.empty()
+    spTmpPmt = st.empty()
+    spGtmpPmt = st.empty()
+    spTmp = st.empty()
+    spDragPmt = st.empty()
+    spDragLiftPmt = st.empty()
+    spDrag = st.empty()
+
+    for i in range(0, len(o.time)):
+        spTimePmt.markdown("Current Time Elapsed **" + rnd(o.time[i])+"**")
+        spTfPmt.markdown("Curent TimeFrame **" + str(i) + "**")
+
+        spSpdPmt.markdown("The current velocity is **" + rnd(o.vec["velocity"][i])+"**")
+        spSpeed.line_chart(o.vec[0:i], height=100)
+
+        spAccPmt.markdown("Current Absolute Acceleration **" + rnd(o.acc["absAcc"][i]) + "**")
+        spAcc.line_chart(o.acc[0:i], height=100)
+
+        spAngPmt.markdown("Current Angle below Horizontal **" + rnd(-o.angle["angBelowHor"][i]) + "**")
+        spAng.line_chart(o.angle["angBelowHor"][0:i], height=100)
+
+        spAltPmt.markdown("Current Height **" + rnd(o.hgt["height"][i]) + "**")
+        spAlt.area_chart(o.hgt[0:i], height=100)
+
+        spDispPmt.markdown("Current Displacement is **" + rnd(o.disp["disp"][i]) + "**")
+        spDispEarthPmt.markdown("Current Displacement around Earth **" + rnd(o.disp["dispEarth"][i]) + "**")
+        spDisp.area_chart(o.disp[0:i], height=100)
+
+        spTmpPmt.markdown("The current temp is **" + rnd(o.temp["curTemp"][i]) + "**")
+        spGtmpPmt.markdown("The maximum temp is **" + rnd(o.temp["maxTemp"][i]) + "**")
+        spTmp.area_chart(o.temp[0:i], height=100)
+
+        spDragPmt.markdown("Current Drag Coefficient **" + rnd(o.drag["dragCoeff"][i]) + "**")
+        spDragLiftPmt.markdown("Current Lift to Drag **" + rnd(o.drag["liftToDrag"][i]) + "**")
+        spDrag.line_chart(o.drag[0:i], height=100)
+        time.sleep(1.0 / SimulationSpeed)
+
 def manualSimulation(o):
-    i = st.slider("Current TimeFrame", 0, len(o.time))
+    i = st.slider("Current TimeFrame", 0, len(o.time)-1)
     st.markdown("**Please drag TimeFrame slider slowly**")
     st.markdown("Current Time Elapsed **" + rnd(o.time[i]) + "**")
     st.markdown("Curent TimeFrame **" + str(i) + "**")
@@ -173,10 +228,10 @@ def fetchcombined(sideInput):
 
 def startApp():
     st.markdown("# Spacecraft Landing Simulator UI")
-    input = sideBarInput()
-    if st.sidebar.checkbox("Hide Prompt and Press Start"):
-        manualSimulation(convert(fetchcombined(input)))
-    else:
+    start = st.sidebar.selectbox("Select Page",("Introduction","Manual Simulation","Automated Simulation"))
+    if start == "Manual Simulation":
+        manualSimulation(convert(fetchcombined(sideBarInput())))
+    elif start == "Introduction":
         st.empty()
         st.markdown("""
         ## Instructions:
@@ -196,6 +251,8 @@ def startApp():
         This is the board where we brainstorm and sort out how properties are related \n
         (Registeration may be required to view the public board)
         """)
+    elif start == "Automated Simulation":
+        autoSimulation(convert(fetchcombined(sideBarInput())))
 
 if __name__ == '__main__':
     startApp()
