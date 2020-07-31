@@ -3,7 +3,8 @@
 [![GitHub issues](https://img.shields.io/github/issues/SkymanOne/SpaceShuttleSimulator)](https://github.com/SkymanOne/SpaceShuttleSimulator/issues)
 [![Build Status](https://travis-ci.org/SkymanOne/SpaceShuttleSimulator.svg?branch=master)](https://travis-ci.org/SkymanOne/SpaceShuttleSimulator)
 
-<img src="assets/demo.png" height="537"/>
+<img src="assets/demo.jpg" height="537"/>
+<img src="assets/demo2.jpg" height="537"/>
 
 ## Description
 The project is the first try to program a mathematical model describing the trajectory and other properties of space vehicle during the re-entry into the Earth's atmosphere.

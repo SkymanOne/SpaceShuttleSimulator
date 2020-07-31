@@ -37,7 +37,8 @@ namespace Simulation.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //we don't really transfer secret rocket launch codes
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
