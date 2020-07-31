@@ -35,5 +35,12 @@ dotnet run #runs the web api app
 dotnet test #runs tests in Simulation.Tests
 ```
 
+Having set up the backend, you are ready to run the frontend which is dead easy:
+```bash
+cd Simulation.Frontend
+pip install streamlit
+streamlit run GUI.py
+```
+
 ## License
 The whole project is licensed under [MIT](https://github.com/SkymanOne/SpaceShuttleSimulator/blob/master/LICENSE) license. You are more than welcome to make contributions.
